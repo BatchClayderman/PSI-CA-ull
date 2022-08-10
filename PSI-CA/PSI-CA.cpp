@@ -251,9 +251,17 @@ public:
 			cout << "| U ∩ W | = 0" << endl;
 		return;
 	}
-	size_t getWSize()
+	void printSize()
 	{
-		return sizeof(this->W);
+		cout << "sizeof(R) = " << sizeof(Receiver_R) << " B" << endl;
+		cout << "\tsizeof(R.X) = " << sizeof(this->X) << " B" << endl;
+		cout << "\tsizeof(R.k) = " << sizeof(this->k) << " B" << endl;
+		cout << "\tsizeof(R.X_c) = " << sizeof(this->X_c) << " B" << endl;
+		cout << "\tsizeof(R.Z) = " << sizeof(this->Z) << " B" << endl;
+		cout << "\tsizeof(R.W) = " << sizeof(this->W) << " B" << endl;
+		cout << "\tsizeof(R.U) = " << sizeof(this->U) << " B" << endl;
+		cout << "\tsizeof(R.Z_pi) = " << sizeof(this->Z_pi) << " B" << endl;
+		return;
 	}
 };
 Receiver_R R;
@@ -317,6 +325,16 @@ public:
 	{
 		return this->T;
 	}
+	void printSize()
+	{
+		cout << "sizeof(S) = " << sizeof(Sender_S) << " B" << endl;
+		cout << "\tsizeof(S.Y) = " << sizeof(this->Y) << " B" << endl;
+		cout << "\tsizeof(S.k) = " << sizeof(this->k) << " B" << endl;
+		cout << "\tsizeof(S.V) = " << sizeof(this->V) << " B" << endl;
+		cout << "\tsizeof(S.Z_pi) = " << sizeof(this->Z_pi) << " B" << endl;
+		cout << "\tsizeof(S.T) = " << sizeof(this->T) << " B" << endl;
+		return;
+	}
 };
 Sender_S S;
 
@@ -346,6 +364,14 @@ public:
 	Element* send_W()
 	{
 		return this->W;
+	}
+	void printSize()
+	{
+		cout << "sizeof(C) = " << sizeof(Cloud_C) << " B" << endl;
+		cout << "\tsizeof(C.Z) = " << sizeof(this->Z) << " B" << endl;
+		cout << "\tsizeof(C.T) = " << sizeof(this->T) << " B" << endl;
+		cout << "\tsizeof(C.W) = " << sizeof(this->W) << " B" << endl;
+		return;
 	}
 };
 Cloud_C C;
@@ -426,7 +452,9 @@ int main()
 	clock_t end_time = clock();
 	cout << endl;
 	cout << "Time: " << end_time - start_time << " / " << TimeToTest << " = " << (double)(end_time - start_time) / TimeToTest << "ms" << endl;
-	cout << "sizeof(R) = " << sizeof(R) << " KB\t\tsizeof(S) = " << sizeof(S) << " KB\t\tsizeof(C) = " << sizeof(C) << " KB" << endl;
-	cout << "sizeof(W) = " << R.getWSize() << " KB" << endl;
+	R.printSize();
+	S.printSize();
+	C.printSize();
+	cout << endl;
 	return EXIT_SUCCESS;
 }
