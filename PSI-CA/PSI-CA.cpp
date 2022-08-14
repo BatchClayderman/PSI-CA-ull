@@ -253,7 +253,7 @@ public:
 	}
 	void printSize()
 	{
-		cout << "sizeof(R) = " << sizeof(Receiver_R) << " B" << endl;
+		cout << "sizeof(R) = " << sizeof(this) << " KB" << endl;
 		cout << "\tsizeof(R.X) = " << sizeof(this->X) << " B" << endl;
 		cout << "\tsizeof(R.k) = " << sizeof(this->k) << " B" << endl;
 		cout << "\tsizeof(R.X_c) = " << sizeof(this->X_c) << " B" << endl;
@@ -327,7 +327,7 @@ public:
 	}
 	void printSize()
 	{
-		cout << "sizeof(S) = " << sizeof(Sender_S) << " B" << endl;
+		cout << "sizeof(S) = " << sizeof(this) << " KB" << endl;
 		cout << "\tsizeof(S.Y) = " << sizeof(this->Y) << " B" << endl;
 		cout << "\tsizeof(S.k) = " << sizeof(this->k) << " B" << endl;
 		cout << "\tsizeof(S.V) = " << sizeof(this->V) << " B" << endl;
@@ -367,7 +367,7 @@ public:
 	}
 	void printSize()
 	{
-		cout << "sizeof(C) = " << sizeof(Cloud_C) << " B" << endl;
+		cout << "sizeof(C) = " << sizeof(this) << " KB" << endl;
 		cout << "\tsizeof(C.Z) = " << sizeof(this->Z) << " B" << endl;
 		cout << "\tsizeof(C.T) = " << sizeof(this->T) << " B" << endl;
 		cout << "\tsizeof(C.W) = " << sizeof(this->W) << " B" << endl;
