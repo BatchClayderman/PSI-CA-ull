@@ -28,9 +28,10 @@
 #define MAX_PATH 260
 #endif
 #endif
+#define kBit 128
 #define N 26
 #define n 11
-#define r 10
+#define r 3
 #define beta 50
 #define TimeToTest 50
 #endif // _PSICA_H
@@ -130,7 +131,7 @@ Element decode(Element a, Element b)
 
 
 /* 类 */
-class Receiver_R
+class Receiver
 {
 private:
 	Element X[n] = { 0 };
@@ -190,6 +191,7 @@ public:
 			this->Z_pi[i] = this->X_c[pi(i)] ^ this->Z[i];
 		return this->Z_pi;
 	}
+#ifdef _DEBUG
 	void printArray()
 	{
 		cout << "X = { " << this->X[0];
@@ -203,6 +205,12 @@ public:
 		cout << endl;
 		return;
 	}
+#else
+	void printArray()
+	{
+		return;
+	}
+#endif
 	void obtain_Z()
 	{
 		for (int i = 0; i < beta; ++i)
@@ -237,6 +245,7 @@ public:
 				intersection[index++] = this->W[i];
 		if (intersection[0])
 		{
+#ifdef _DEBUG
 			cout << "| U ∩ W | = | { " << intersection[0];
 			for (int i = 1; i < beta; ++i)
 				if (intersection[i])
@@ -246,27 +255,33 @@ public:
 					cout << " } | = " << index << endl;
 					break;
 				}
+#else
+			cout << "| U ∩ W | = " << index << endl;
+#endif
 		}
 		else
 			cout << "| U ∩ W | = 0" << endl;
 		return;
 	}
-	void printSize()
+	size_t printSize()
 	{
-		cout << "sizeof(R) = " << sizeof(this) << " KB" << endl;
-		cout << "\tsizeof(R.X) = " << sizeof(this->X) << " B" << endl;
-		cout << "\tsizeof(R.k) = " << sizeof(this->k) << " B" << endl;
-		cout << "\tsizeof(R.X_c) = " << sizeof(this->X_c) << " B" << endl;
-		cout << "\tsizeof(R.Z) = " << sizeof(this->Z) << " B" << endl;
-		cout << "\tsizeof(R.W) = " << sizeof(this->W) << " B" << endl;
-		cout << "\tsizeof(R.U) = " << sizeof(this->U) << " B" << endl;
-		cout << "\tsizeof(R.Z_pi) = " << sizeof(this->Z_pi) << " B" << endl;
-		return;
+		Element baseNum = kBit / (sizeof(Element) << 3);
+		cout << "sizeof(Receiver) = " << sizeof(Receiver) << " B" << endl;
+		cout << "sizeof(R) = " << sizeof(this) * baseNum << " KB" << endl;
+		cout << "\tsizeof(R.X) = " << sizeof(this->X) * baseNum << " B" << endl;
+		cout << "\tsizeof(R.k) = " << sizeof(this->k) * baseNum << " B (*)" << endl;
+		cout << "\tsizeof(R.X_c) = " << sizeof(this->X_c) * baseNum << " B" << endl;
+		cout << "\tsizeof(R.Z) = " << sizeof(this->Z) * baseNum << " B" << endl;
+		cout << "\tsizeof(R.W) = " << sizeof(this->W) * baseNum << " B (*)" << endl;
+		cout << "\tsizeof(R.U) = " << sizeof(this->U) * baseNum << " B" << endl;
+		cout << "\tsizeof(R.Z_pi) = " << sizeof(this->Z_pi) * baseNum << " B" << endl;
+		cout << "\tsizeof(R.*) = " << (sizeof(this->k) + sizeof(this->W)) * baseNum << " B (*)" << endl;
+		return (sizeof(this->k) + sizeof(this->W)) * baseNum;
 	}
 };
-Receiver_R R;
+Receiver R;
 
-class Sender_S
+class Sender
 {
 private:
 	Element Y[N] = { 0 };
@@ -325,20 +340,23 @@ public:
 	{
 		return this->T;
 	}
-	void printSize()
+	size_t printSize()
 	{
-		cout << "sizeof(S) = " << sizeof(this) << " KB" << endl;
-		cout << "\tsizeof(S.Y) = " << sizeof(this->Y) << " B" << endl;
-		cout << "\tsizeof(S.k) = " << sizeof(this->k) << " B" << endl;
-		cout << "\tsizeof(S.V) = " << sizeof(this->V) << " B" << endl;
-		cout << "\tsizeof(S.Z_pi) = " << sizeof(this->Z_pi) << " B" << endl;
-		cout << "\tsizeof(S.T) = " << sizeof(this->T) << " B" << endl;
-		return;
+		Element baseNum = kBit / (sizeof(Element) << 3);
+		cout << "sizeof(Sender) = " << sizeof(Sender) << " B" << endl;
+		cout << "sizeof(S) = " << sizeof(this) * baseNum << " KB" << endl;
+		cout << "\tsizeof(S.Y) = " << sizeof(this->Y) * baseNum << " B" << endl;
+		cout << "\tsizeof(S.k) = " << sizeof(this->k) * baseNum << " B (*)" << endl;
+		cout << "\tsizeof(S.V) = " << sizeof(this->V) * baseNum << " B" << endl;
+		cout << "\tsizeof(S.Z_pi) = " << sizeof(this->Z_pi) * baseNum << " B" << endl;
+		cout << "\tsizeof(S.T) = " << sizeof(this->T) * baseNum << " B (*)" << endl;
+		cout << "\tsizeof(S.*) = " << (sizeof(this->k) + sizeof(this->T)) * baseNum << " B (*)" << endl;
+		return (sizeof(this->k) + sizeof(this->T)) * baseNum;
 	}
 };
-Sender_S S;
+Sender S;
 
-class Cloud_C
+class Cloud
 {
 private:
 	Element Z[beta] = { 0 };
@@ -365,16 +383,19 @@ public:
 	{
 		return this->W;
 	}
-	void printSize()
+	size_t printSize()
 	{
-		cout << "sizeof(C) = " << sizeof(this) << " KB" << endl;
-		cout << "\tsizeof(C.Z) = " << sizeof(this->Z) << " B" << endl;
-		cout << "\tsizeof(C.T) = " << sizeof(this->T) << " B" << endl;
-		cout << "\tsizeof(C.W) = " << sizeof(this->W) << " B" << endl;
-		return;
+		Element baseNum = kBit / (sizeof(Element) << 3);
+		cout << "sizeof(Cloud) = " << sizeof(Cloud) << " B" << endl;
+		cout << "sizeof(C) = " << sizeof(this) * baseNum << " KB" << endl;
+		cout << "\tsizeof(C.Z) = " << sizeof(this->Z) * baseNum << " B (*)" << endl;
+		cout << "\tsizeof(C.T) = " << sizeof(this->T) * baseNum << " B (*)" << endl;
+		cout << "\tsizeof(C.W) = " << sizeof(this->W) * baseNum << " B" << endl;
+		cout << "\tsizeof(C.*) = " << (sizeof(this->Z) + sizeof(this->T)) * baseNum << " B (*)" << endl;
+		return (sizeof(this->Z) + sizeof(this->T)) * baseNum;
 	}
 };
-Cloud_C C;
+Cloud C;
 
 
 /* 主函数 */
@@ -451,10 +472,9 @@ int main()
 	}
 	clock_t end_time = clock();
 	cout << endl;
-	cout << "Time: " << end_time - start_time << " / " << TimeToTest << " = " << (double)(end_time - start_time) / TimeToTest << "ms" << endl;
-	R.printSize();
-	S.printSize();
-	C.printSize();
-	cout << endl;
+	cout << "/**************************************** PSI-CA ****************************************/" << endl;
+	cout << "kBit = " << kBit << "\t\tN = 2 ** " << N << "\t\tn = 2 ** " << n << "\t\tr = 2 ** " << r << endl;
+	cout << "Time: " << ((double)end_time - start_time) * kBit / (sizeof(Element) << 3) << " / " << TimeToTest << " = " << ((double)end_time - start_time) * kBit / (sizeof(Element) << 3) / TimeToTest << "ms" << endl;
+	cout << "sizeof(*) = " << ((R.printSize() + S.printSize() + C.printSize()) >> 4) << " KB (*)" << endl << endl;
 	return EXIT_SUCCESS;
 }
