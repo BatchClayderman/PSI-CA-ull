@@ -31,7 +31,7 @@
 #define kBit 128
 #define N 26
 #define n 11
-#define r 3
+#define r 5
 #define beta 50
 #define TimeToTest 50
 #endif // _PSICA_H
@@ -265,7 +265,7 @@ public:
 	}
 	size_t printSize()
 	{
-		Element baseNum = kBit / (sizeof(Element) << 3);
+		size_t baseNum = kBit / (sizeof(Element) << 3);
 		cout << "sizeof(Receiver) = " << sizeof(Receiver) << " B" << endl;
 		cout << "sizeof(R) = " << sizeof(this) * baseNum << " KB" << endl;
 		cout << "\tsizeof(R.X) = " << sizeof(this->X) * baseNum << " B" << endl;
@@ -342,7 +342,7 @@ public:
 	}
 	size_t printSize()
 	{
-		Element baseNum = kBit / (sizeof(Element) << 3);
+		size_t baseNum = kBit / (sizeof(Element) << 3);
 		cout << "sizeof(Sender) = " << sizeof(Sender) << " B" << endl;
 		cout << "sizeof(S) = " << sizeof(this) * baseNum << " KB" << endl;
 		cout << "\tsizeof(S.Y) = " << sizeof(this->Y) * baseNum << " B" << endl;
@@ -385,7 +385,7 @@ public:
 	}
 	size_t printSize()
 	{
-		Element baseNum = kBit / (sizeof(Element) << 3);
+		size_t baseNum = kBit / (sizeof(Element) << 3);
 		cout << "sizeof(Cloud) = " << sizeof(Cloud) << " B" << endl;
 		cout << "sizeof(C) = " << sizeof(this) * baseNum << " KB" << endl;
 		cout << "\tsizeof(C.Z) = " << sizeof(this->Z) * baseNum << " B (*)" << endl;
@@ -473,7 +473,7 @@ int main()
 	clock_t end_time = clock();
 	cout << endl;
 	cout << "/**************************************** PSI-CA ****************************************/" << endl;
-	cout << "kBit = " << kBit << "\t\tN = 2 ** " << N << "\t\tn = 2 ** " << n << "\t\tr = 2 ** " << r << endl;
+	cout << "kBit = " << kBit << "\t\tN = 2 ** " << N << "\t\tn = 2 ** " << n << "\t\tr = " << r << endl;
 	cout << "Time: " << ((double)end_time - start_time) * kBit / (sizeof(Element) << 3) << " / " << TimeToTest << " = " << ((double)end_time - start_time) * kBit / (sizeof(Element) << 3) / TimeToTest << "ms" << endl;
 	cout << "sizeof(*) = " << ((R.printSize() + S.printSize() + C.printSize()) >> 4) << " KB (*)" << endl << endl;
 	return EXIT_SUCCESS;
