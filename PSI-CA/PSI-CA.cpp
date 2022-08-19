@@ -1,8 +1,8 @@
 ﻿#include <iostream>
 #include <vector>
-#include <set>
 #include <algorithm>
 #ifndef _PSICA_H
+#define _PSICA_Hd
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0
 #endif
@@ -12,11 +12,8 @@
 #ifndef EOF
 #define EOF (-1)
 #endif
-#ifndef EEOF
-#define EEOF (-2)
-#endif
 #ifndef NULL
-#define NULL
+#define NULL 0
 #endif
 #ifndef MAX_BUFFER
 #define MAX_BUFFER 5000
@@ -35,11 +32,11 @@
 #define r 5
 #define beta 50
 #define TimeToTest 50
-#endif // _PSICA_H
+#endif//_PSICA_H
 using namespace std;
 typedef unsigned long long int Element;
 typedef const void* CPVOID;
-vector<int> hashpi, archashpi;
+vector<int> hashpi{}, archashpi{};
 size_t baseNum = kBit / (sizeof(Element) << 3);
 clock_t sub_start_time = clock(), sub_end_time = clock();
 double timerR = 0, timerS = 0, timerC = 0;
@@ -138,13 +135,14 @@ Element decode(Element a, Element b)
 class Receiver
 {
 private:
-	Element X[n] = { 0 };
-	Element k = 0;
-	Element X_c[beta] = { 0 };
-	Element Z[beta] = { 0 };
-	Element W[beta] = { 0 };
-	Element U[beta] = { 0 };
-	Element Z_pi[beta] = { 0 };
+	Element X[n] = { NULL };
+	Element k = NULL;
+	Element X_c[beta] = { NULL };
+	Element Z[beta] = { NULL };
+	Element W[beta] = { NULL };
+	Element U[beta] = { NULL };
+	Element Z_pi[beta] = { NULL };
+	vector<Element> intersection{};
 
 public:
 	void input_X()
@@ -154,12 +152,15 @@ public:
 	}
 	void auto_input_X()
 	{
-		int index = 0;
-		set<Element> s;
-		while (s.size() < n)
-			s.insert(getRandom());
-		for (auto ele = s.begin(); ele != s.end(); ++ele)
-			this->X[index++] = *ele;
+		vector<Element> v;
+		while (v.size() < n)
+		{
+			Element tmp = getRandom();
+			if (find(v.begin(), v.end(), tmp) == v.end())
+				v.push_back(tmp);
+		}
+		for (int i = 0; i < n; ++i)
+			this->X[i] = v[i];
 		return;
 	}
 	void choose_k()
@@ -189,7 +190,7 @@ public:
 		}
 		return;
 	}
-	Element* help_calc_Z_pi()
+	Element* help_compute_Z_pi()
 	{
 		for (int i = 0; i < beta; ++i)
 			this->Z_pi[i] = this->X_c[pi(i)] ^ this->Z[i];
@@ -239,28 +240,22 @@ public:
 	}
 	void printIntersection()
 	{
-		Element intersection[beta] = { 0 };
-		int index = 0;
+		this->intersection.clear();
 		unsigned int comparation = 0;
 		qsort(this->W, beta, sizeof(Element), compare);
 		qsort(this->U, beta, sizeof(Element), compare);
 		for (int i = 0; i < beta; ++i)
 			if (this->W[i] && BinarySearch(this->U, 0, beta - 1, this->W[i], comparation))
-				intersection[index++] = this->W[i];
-		if (intersection[0])
+				this->intersection.push_back(this->W[i]);
+		if (this->intersection.size())
 		{
 #ifdef _DEBUG
 			cout << "| U ∩ W | = | { " << intersection[0];
-			for (int i = 1; i < beta; ++i)
-				if (intersection[i])
-					cout << ", " << intersection[i];
-				else
-				{
-					cout << " } | = " << index << endl;
-					break;
-				}
+			for (size_t i = 1; i < this->intersection.size(); ++i)
+				cout << ", " << this->intersection[i];
+			cout << " } | = " << this->intersection.size() << endl;
 #else
-			cout << "| U ∩ W | = " << index << endl;
+			cout << "| U ∩ W | = " << this->intersection.size() << endl;
 #endif
 		}
 		else
@@ -275,12 +270,13 @@ public:
 		cout << "\tsizeof(R.X) = " << sizeof(this->X) * baseNum << " B" << endl;
 		cout << "\tsizeof(R.k) = " << sizeof(this->k) * baseNum << " B (*)" << endl;
 		cout << "\tsizeof(R.X_c) = " << sizeof(this->X_c) * baseNum << " B" << endl;
-		cout << "\tsizeof(R.Z) = " << sizeof(this->Z) * baseNum << " B" << endl;
+		cout << "\tsizeof(R.Z) = " << sizeof(this->Z) * baseNum << " B (*)" << endl;
 		cout << "\tsizeof(R.W) = " << sizeof(this->W) * baseNum << " B (*)" << endl;
 		cout << "\tsizeof(R.U) = " << sizeof(this->U) * baseNum << " B" << endl;
-		cout << "\tsizeof(R.Z_pi) = " << sizeof(this->Z_pi) * baseNum << " B" << endl;
-		cout << "\tsizeof(R.*) = " << (sizeof(this->k) + sizeof(this->W)) * baseNum << " B (*)" << endl;
-		return (sizeof(this->k) + sizeof(this->W)) * baseNum;
+		cout << "\tsizeof(R.Z_pi) = " << sizeof(this->Z_pi) * baseNum << " B (*)" << endl;
+		cout << "\tsizeof(R.intersection) = " << sizeof(this->intersection) * baseNum << " B (*)" << endl;
+		cout << "\tsizeof(R.*) = " << (sizeof(this->k) + sizeof(this->Z) + sizeof(this->W) + sizeof(this->Z_pi)) * baseNum << " B (*)" << endl;
+		return (sizeof(this->k) + sizeof(this->Z) + sizeof(this->W) + sizeof(this->Z_pi)) * baseNum;
 	}
 };
 Receiver R;
@@ -288,11 +284,11 @@ Receiver R;
 class Sender
 {
 private:
-	Element Y[N] = { 0 };
-	Element k = 0;
-	Element V[beta] = { 0 };
-	Element Z_pi[beta] = { 0 };
-	Element T[N] = { 0 };
+	Element Y[N] = { NULL };
+	Element k = NULL;
+	Element V[beta] = { NULL };
+	Element Z_pi[beta] = { NULL };
+	Element T[N] = { NULL };
 
 public:
 	void input_Y()
@@ -301,12 +297,15 @@ public:
 	}
 	void auto_input_Y()
 	{
-		int index = 0;
-		set<Element> s;
-		while (s.size() < N)
-			s.insert(getRandom());
-		for (auto ele = s.begin(); ele != s.end(); ++ele)
-			this->Y[index++] = *ele;
+		vector<Element> v;
+		while (v.size() < N)
+		{
+			Element tmp = getRandom();
+			if (find(v.begin(), v.end(), tmp) == v.end())
+				v.push_back(tmp);
+		}
+		for (int i = 0; i < N; ++i)
+			this->Y[i] = v[i];
 		return;
 	}
 	void receive_k(Element k)
@@ -320,13 +319,13 @@ public:
 			V[i] = this->k - rand();
 		return;
 	}
-	void calc_Z_pi(Element* Z)
+	void compute_Z_pi(Element* Z)
 	{
 		for (int i = 0; i < beta; ++i)
 			this->Z_pi[i] = *(Z + i);
 		return;
 	}
-	void calc_T()
+	void compute_T()
 	{
 		for (int i = 0; i < N; ++i)
 		{
@@ -352,10 +351,10 @@ public:
 		cout << "\tsizeof(S.Y) = " << sizeof(this->Y) * baseNum << " B" << endl;
 		cout << "\tsizeof(S.k) = " << sizeof(this->k) * baseNum << " B (*)" << endl;
 		cout << "\tsizeof(S.V) = " << sizeof(this->V) * baseNum << " B" << endl;
-		cout << "\tsizeof(S.Z_pi) = " << sizeof(this->Z_pi) * baseNum << " B" << endl;
+		cout << "\tsizeof(S.Z_pi) = " << sizeof(this->Z_pi) * baseNum << " B (*)" << endl;
 		cout << "\tsizeof(S.T) = " << sizeof(this->T) * baseNum << " B (*)" << endl;
-		cout << "\tsizeof(S.*) = " << (sizeof(this->k) + sizeof(this->T)) * baseNum << " B (*)" << endl;
-		return (sizeof(this->k) + sizeof(this->T)) * baseNum;
+		cout << "\tsizeof(S.*) = " << (sizeof(this->k) + sizeof(this->T) + sizeof(this->Z_pi)) * baseNum << " B (*)" << endl;
+		return (sizeof(this->k) + sizeof(this->T) + sizeof(this->Z_pi)) * baseNum;
 	}
 };
 Sender S;
@@ -363,9 +362,9 @@ Sender S;
 class Cloud
 {
 private:
-	Element Z[beta] = { 0 };
-	Element T[N] = { 0 };
-	Element W[beta] = { 0 };
+	Element Z[beta] = { NULL };
+	Element T[N] = { NULL };
+	Element W[beta] = { NULL };
 
 public:
 	void receive_Z(Element* Z)
@@ -405,6 +404,7 @@ Cloud C;
 /* 主函数 */
 void initial(bool isAuto)
 {
+	
 	init_hashpi();// setup pi
 	if (isAuto)
 	{
@@ -433,17 +433,19 @@ void setup()
 
 void distribution()
 {
-	sub_start_time = clock();	R.hash_X_to_X_c(); 					sub_end_time = clock(); timerR += (double)sub_end_time - sub_start_time;
-	sub_start_time = clock();	R.printArray(); 					sub_end_time = clock(); timerR += (double)sub_end_time - sub_start_time;
-	sub_start_time = clock();	R.obtain_Z(); 						sub_end_time = clock(); timerR += (double)sub_end_time - sub_start_time;// ss1
-	sub_start_time = clock();	S.calc_Z_pi(R.help_calc_Z_pi()); 	sub_end_time = clock(); timerR += (double)sub_end_time - sub_start_time; timerS += (double)sub_end_time - sub_start_time;// ss2
-	sub_start_time = clock();	C.receive_Z(R.send_Z());			sub_end_time = clock(); timerR += (double)sub_end_time - sub_start_time; timerC += (double)sub_end_time - sub_start_time;// Z is sent to C
+	sub_start_time = clock();	R.hash_X_to_X_c(); 						sub_end_time = clock(); timerR += (double)sub_end_time - sub_start_time;
+#ifdef _DEBUG
+	sub_start_time = clock();	R.printArray(); 						sub_end_time = clock(); timerR += (double)sub_end_time - sub_start_time;
+#endif
+	sub_start_time = clock();	R.obtain_Z(); 							sub_end_time = clock(); timerR += (double)sub_end_time - sub_start_time;// ss1
+	sub_start_time = clock();	S.compute_Z_pi(R.help_compute_Z_pi()); 	sub_end_time = clock(); timerR += (double)sub_end_time - sub_start_time; timerS += (double)sub_end_time - sub_start_time;// ss2
+	sub_start_time = clock();	C.receive_Z(R.send_Z());				sub_end_time = clock(); timerR += (double)sub_end_time - sub_start_time; timerC += (double)sub_end_time - sub_start_time;// Z is sent to C
 	return;
 }
 
 void computation()
 {
-	sub_start_time = clock();	S.calc_T();					sub_end_time = clock(); timerS += (double)sub_end_time - sub_start_time;
+	sub_start_time = clock();	S.compute_T();				sub_end_time = clock(); timerS += (double)sub_end_time - sub_start_time;
 	sub_start_time = clock();	C.receive_T(S.send_T());	sub_end_time = clock(); timerS += (double)sub_end_time - sub_start_time; timerC += (double)sub_end_time - sub_start_time;// T is sent to C
 	sub_start_time = clock();	R.receive_W(C.send_W());	sub_end_time = clock(); timerR += (double)sub_end_time - sub_start_time; timerC += (double)sub_end_time - sub_start_time;// W is sent to R
 	sub_start_time = clock();	R.generate_U();				sub_end_time = clock(); timerR += (double)sub_end_time - sub_start_time;
@@ -479,6 +481,6 @@ int main()
 	cout << "/**************************************** PSI-CA ****************************************/" << endl;
 	cout << "kBit = " << kBit << "\t\tN = 2 ** " << N << "\t\tn = 2 ** " << n << "\t\tr = " << r << endl;
 	cout << "Time: " << ((double)end_time - start_time) * baseNum << " / " << TimeToTest << " = " << ((double)end_time - start_time) * baseNum / TimeToTest << "ms" << endl;
-	cout << "sizeof(*) = " << ((R.printSize() + S.printSize() + C.printSize()) >> 4) << " KB (*)" << endl << endl;
+	cout << "sizeof(*) = " << ((R.printSize() + S.printSize() + C.printSize()) >> 5) << " KB (*)" << endl << endl;
 	return EXIT_SUCCESS;
 }
