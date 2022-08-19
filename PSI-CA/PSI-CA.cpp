@@ -28,6 +28,7 @@
 #define MAX_PATH 260
 #endif
 #endif
+
 #define kBit 128
 #define N 26
 #define n 11
@@ -39,6 +40,9 @@ using namespace std;
 typedef unsigned long long int Element;
 typedef const void* CPVOID;
 vector<int> hashpi, archashpi;
+size_t baseNum = kBit / (sizeof(Element) << 3);
+clock_t sub_start_time = clock(), sub_end_time = clock();
+double timerR = 0, timerS = 0, timerC = 0;
 
 
 /* 子函数 */
@@ -265,7 +269,7 @@ public:
 	}
 	size_t printSize()
 	{
-		size_t baseNum = kBit / (sizeof(Element) << 3);
+		cout << "Timeof(R) = " << timerR * baseNum << " / " << TimeToTest << " = " << timerR * baseNum / TimeToTest << " ms" << endl;
 		cout << "sizeof(Receiver) = " << sizeof(Receiver) << " B" << endl;
 		cout << "sizeof(R) = " << sizeof(this) * baseNum << " KB" << endl;
 		cout << "\tsizeof(R.X) = " << sizeof(this->X) * baseNum << " B" << endl;
@@ -342,7 +346,7 @@ public:
 	}
 	size_t printSize()
 	{
-		size_t baseNum = kBit / (sizeof(Element) << 3);
+		cout << "Timeof(S) = " << timerS * baseNum << " / " << TimeToTest << " = " << timerS * baseNum / TimeToTest << " ms" << endl;
 		cout << "sizeof(Sender) = " << sizeof(Sender) << " B" << endl;
 		cout << "sizeof(S) = " << sizeof(this) * baseNum << " KB" << endl;
 		cout << "\tsizeof(S.Y) = " << sizeof(this->Y) * baseNum << " B" << endl;
@@ -385,7 +389,7 @@ public:
 	}
 	size_t printSize()
 	{
-		size_t baseNum = kBit / (sizeof(Element) << 3);
+		cout << "Timeof(C) = " << timerC * baseNum << " / " << TimeToTest << " = " << timerC * baseNum / TimeToTest << " ms" << endl;
 		cout << "sizeof(Cloud) = " << sizeof(Cloud) << " B" << endl;
 		cout << "sizeof(C) = " << sizeof(this) * baseNum << " KB" << endl;
 		cout << "\tsizeof(C.Z) = " << sizeof(this->Z) * baseNum << " B (*)" << endl;
@@ -421,29 +425,29 @@ void initial(bool isAuto)
 
 void setup()
 {
-	R.choose_k();// The receiver chooses a random PRG key k
-	S.receive_k(R.send_k());// k is sent to S
-	S.rand_V();// rand beta
+	sub_start_time = clock();	R.choose_k();				sub_end_time = clock(); timerR += (double)sub_end_time - sub_start_time;// The receiver chooses a random PRG key k
+	sub_start_time = clock();	S.receive_k(R.send_k());	sub_end_time = clock(); timerR += (double)sub_end_time - sub_start_time; timerS += (double)sub_end_time - sub_start_time;// k is sent to S
+	sub_start_time = clock();	S.rand_V();					sub_end_time = clock(); timerS += (double)sub_end_time - sub_start_time;// rand beta
 	return;
 }
 
 void distribution()
 {
-	R.hash_X_to_X_c();
-	R.printArray();
-	R.obtain_Z();// ss1
-	S.calc_Z_pi(R.help_calc_Z_pi());// ss2
-	C.receive_Z(R.send_Z());// Z is sent to C
+	sub_start_time = clock();	R.hash_X_to_X_c(); 					sub_end_time = clock(); timerR += (double)sub_end_time - sub_start_time;
+	sub_start_time = clock();	R.printArray(); 					sub_end_time = clock(); timerR += (double)sub_end_time - sub_start_time;
+	sub_start_time = clock();	R.obtain_Z(); 						sub_end_time = clock(); timerR += (double)sub_end_time - sub_start_time;// ss1
+	sub_start_time = clock();	S.calc_Z_pi(R.help_calc_Z_pi()); 	sub_end_time = clock(); timerR += (double)sub_end_time - sub_start_time; timerS += (double)sub_end_time - sub_start_time;// ss2
+	sub_start_time = clock();	C.receive_Z(R.send_Z());			sub_end_time = clock(); timerR += (double)sub_end_time - sub_start_time; timerC += (double)sub_end_time - sub_start_time;// Z is sent to C
 	return;
 }
 
 void computation()
 {
-	S.calc_T();
-	C.receive_T(S.send_T());// T is sent to C
-	R.receive_W(C.send_W());// W is sent to R
-	R.generate_U();
-	R.printIntersection();
+	sub_start_time = clock();	S.calc_T();					sub_end_time = clock(); timerS += (double)sub_end_time - sub_start_time;
+	sub_start_time = clock();	C.receive_T(S.send_T());	sub_end_time = clock(); timerS += (double)sub_end_time - sub_start_time; timerC += (double)sub_end_time - sub_start_time;// T is sent to C
+	sub_start_time = clock();	R.receive_W(C.send_W());	sub_end_time = clock(); timerR += (double)sub_end_time - sub_start_time; timerC += (double)sub_end_time - sub_start_time;// W is sent to R
+	sub_start_time = clock();	R.generate_U();				sub_end_time = clock(); timerR += (double)sub_end_time - sub_start_time;
+	sub_start_time = clock();	R.printIntersection();		sub_end_time = clock(); timerR += (double)sub_end_time - sub_start_time;
 	return;
 }
 
@@ -474,7 +478,7 @@ int main()
 	cout << endl;
 	cout << "/**************************************** PSI-CA ****************************************/" << endl;
 	cout << "kBit = " << kBit << "\t\tN = 2 ** " << N << "\t\tn = 2 ** " << n << "\t\tr = " << r << endl;
-	cout << "Time: " << ((double)end_time - start_time) * kBit / (sizeof(Element) << 3) << " / " << TimeToTest << " = " << ((double)end_time - start_time) * kBit / (sizeof(Element) << 3) / TimeToTest << "ms" << endl;
+	cout << "Time: " << ((double)end_time - start_time) * baseNum << " / " << TimeToTest << " = " << ((double)end_time - start_time) * baseNum / TimeToTest << "ms" << endl;
 	cout << "sizeof(*) = " << ((R.printSize() + S.printSize() + C.printSize()) >> 4) << " KB (*)" << endl << endl;
 	return EXIT_SUCCESS;
 }
