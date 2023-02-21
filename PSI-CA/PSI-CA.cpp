@@ -2,7 +2,7 @@
 #include <vector>
 #include <algorithm>
 #ifndef _PSICA_H
-#define _PSICA_Hd
+#define _PSICA_H
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0
 #endif
@@ -29,8 +29,8 @@
 #define kBit 128
 #define N 26
 #define n 11
-#define r 5
-#define beta 50
+#define beta 50 // 2 ** beta = 2 ** n * 1.27
+#define gamma 3
 #define TimeToTest 50
 #endif//_PSICA_H
 using namespace std;
@@ -330,12 +330,12 @@ public:
 		for (int i = 0; i < N; ++i)
 		{
 			Element q_j = 0, I_i = 0;
-			for (int j = 0; j < r; ++j)
+			for (int j = 0; j < gamma; ++j)
 			{
 				q_j = arcpi(r_i(this->Y[i], j) % beta);
 				I_i = this->Y[i] ^ this->Z_pi[q_j];
 			}
-			T[i] = encode(I_i, this->V[i]);
+			T[i] = encode(I_i, this->V[i % beta]);
 		}
 		return;
 	}
@@ -378,7 +378,7 @@ public:
 		for (int i = 0; i < N; ++i)
 		{
 			this->T[i] = *(T + i);
-			W[i] = decode(this->T[i], this->Z[i]);
+			W[i % beta] = decode(this->T[i], this->Z[i % beta]);
 		}
 		return;
 	}
@@ -479,7 +479,8 @@ int main()
 	clock_t end_time = clock();
 	cout << endl;
 	cout << "/**************************************** PSI-CA ****************************************/" << endl;
-	cout << "kBit = " << kBit << "\t\tN = 2 ** " << N << "\t\tn = 2 ** " << n << "\t\tr = " << r << endl;
+	cout << "kBit = " << kBit << "\t\tgamma = " << gamma << endl;
+	cout << "N = 2 ** " << N << "\t\tn = 2 ** " << n << "\t\tbeta = [2 ** " << (log2(1.27) + n) << "]" << endl;
 	cout << "Time: " << ((double)end_time - start_time) * baseNum << " / " << TimeToTest << " = " << ((double)end_time - start_time) * baseNum / TimeToTest << "ms" << endl;
 	cout << "sizeof(*) = " << ((R.printSize() + S.printSize() + C.printSize()) >> 5) << " KB (*)" << endl << endl;
 	return EXIT_SUCCESS;
