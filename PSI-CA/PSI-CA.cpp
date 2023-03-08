@@ -482,6 +482,6 @@ int main()
 	cout << "kBit = " << kBit << "\t\tgamma = " << gamma << endl;
 	cout << "N = 2 ** " << N << "\t\tn = 2 ** " << n << "\t\tbeta = [2 ** " << (log2(1.27) + n) << "]" << endl;
 	cout << "Time: " << ((double)end_time - start_time) * baseNum << " / " << TimeToTest << " = " << ((double)end_time - start_time) * baseNum / TimeToTest << "ms" << endl;
-	cout << "sizeof(*) = " << ((R.printSize(true) + S.printSize(true) + C.printSize(true)) >> 5) << " KB (*)" << endl << endl;
+	cout << "sizeof(*) = " << (R.printSize(true) + S.printSize(true) + C.printSize(true)) << " B (*)" << endl << endl;
 	return EXIT_SUCCESS;
 }
